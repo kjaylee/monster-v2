@@ -13,8 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Eastsea - Game Platform",
-  description: "Explore games, novels, and briefings on the Eastsea platform",
+  title: "이스트시 - 게임 플랫폼",
+  description: "게임, 소설, 뉴스를 한곳에서 즐기는 이스트시 플랫폼",
+  keywords: ["게임", "소설", "뉴스", "게임플랫폼"],
 };
 
 export default function RootLayout({
@@ -23,7 +24,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="ko">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

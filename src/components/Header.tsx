@@ -7,10 +7,10 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navLinks = [
-    { label: 'Games', href: '/games' },
-    { label: 'Novels', href: '/novels' },
-    { label: 'Briefings', href: '/briefings' },
-    { label: 'Profile', href: '/profile' },
+    { label: '게임', href: '/games' },
+    { label: '소설', href: '/novels' },
+    { label: '뉴스', href: '/briefings' },
+    { label: '프로필', href: '/profile' },
   ];
 
   return (

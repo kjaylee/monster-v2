@@ -8,22 +8,22 @@ export default function Home() {
   return (
     <Layout>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Hero Section */}
+        {/* 히어로 섹션 */}
         <section className="py-12 md:py-20 text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-100 mb-4">
-            Welcome to <span className="text-cyan-500">Eastsea</span>
+            <span className="text-cyan-500">이스트시</span>에 오신 것을 환영합니다
           </h1>
           <p className="text-lg md:text-xl text-slate-400 mb-8 max-w-2xl mx-auto">
-            Discover games, novels, and briefings in a modern, curated experience
+            게임, 소설, 뉴스를 한곳에서 즐기는 현대적이고 세련된 경험
           </p>
         </section>
 
-        {/* Main Categories */}
+        {/* 주요 카테고리 */}
         <section className="py-12 mb-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card 
-              title="🎮 Games" 
-              description="Play exciting games and challenges"
+              title="🎮 게임" 
+              description="흥미로운 게임들을 즐겨보세요"
               variant="hover"
               onClick={() => window.location.href = '/games'}
             >
@@ -33,13 +33,13 @@ export default function Home() {
                 onClick={() => window.location.href = '/games'}
                 className="w-full"
               >
-                Browse Games
+                게임 둘러보기
               </Button>
             </Card>
             
             <Card 
-              title="📚 Novels" 
-              description="Read engaging stories and narratives"
+              title="📚 소설" 
+              description="매력적인 이야기들을 읽어보세요"
               variant="hover"
               onClick={() => window.location.href = '/novels'}
             >
@@ -49,13 +49,13 @@ export default function Home() {
                 onClick={() => window.location.href = '/novels'}
                 className="w-full"
               >
-                Explore Novels
+                소설 탐색하기
               </Button>
             </Card>
             
             <Card 
-              title="📋 Briefings" 
-              description="Check latest briefings and updates"
+              title="📋 뉴스" 
+              description="최신 뉴스와 소식을 확인하세요"
               variant="hover"
               onClick={() => window.location.href = '/briefings'}
             >
@@ -65,50 +65,50 @@ export default function Home() {
                 onClick={() => window.location.href = '/briefings'}
                 className="w-full"
               >
-                View Briefings
+                뉴스 보기
               </Button>
             </Card>
           </div>
         </section>
 
-        {/* Featured Content */}
+        {/* 추천 콘텐츠 */}
         <section className="py-12 mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-100 mb-8">Featured Content</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-100 mb-8">추천 콘텐츠</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card 
-              title="Latest Game Release" 
-              description="Check out our newest game"
+              title="🆕 최신 게임 출시" 
+              description="새로 출시된 게임을 확인해보세요"
               variant="accent"
             >
-              <p className="text-slate-400 mb-4">Coming soon...</p>
-              <Button variant="secondary" size="sm">Learn More</Button>
+              <p className="text-slate-400 mb-4">곧 공개됩니다...</p>
+              <Button variant="secondary" size="sm">더 알아보기</Button>
             </Card>
             
             <Card 
-              title="New Novel Series" 
-              description="Discover our latest story"
+              title="📖 신작 소설 시리즈" 
+              description="최신 스토리를 만나보세요"
               variant="accent"
             >
-              <p className="text-slate-400 mb-4">Coming soon...</p>
-              <Button variant="secondary" size="sm">Learn More</Button>
+              <p className="text-slate-400 mb-4">곧 공개됩니다...</p>
+              <Button variant="secondary" size="sm">더 알아보기</Button>
             </Card>
           </div>
         </section>
 
-        {/* Stats Section (Optional) */}
+        {/* 통계 섹션 */}
         <section className="py-12 border-t border-slate-700">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
             <div>
               <p className="text-3xl font-bold text-cyan-500 mb-2">100+</p>
-              <p className="text-slate-400">Games Available</p>
+              <p className="text-slate-400">이용 가능한 게임</p>
             </div>
             <div>
               <p className="text-3xl font-bold text-cyan-500 mb-2">50+</p>
-              <p className="text-slate-400">Stories</p>
+              <p className="text-slate-400">소설</p>
             </div>
             <div>
-              <p className="text-3xl font-bold text-cyan-500 mb-2">1000+</p>
-              <p className="text-slate-400">Community Members</p>
+              <p className="text-3xl font-bold text-cyan-500 mb-2">1,000+</p>
+              <p className="text-slate-400">커뮤니티 멤버</p>
             </div>
           </div>
         </section>
