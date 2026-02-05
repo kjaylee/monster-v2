@@ -1,0 +1,29 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "name": "Monster v2 - Game & Content Platform",
+  "env": {
+    "NEXT_PUBLIC_SUPABASE_URL": {
+      "description": "Supabase project URL"
+    },
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": {
+      "description": "Supabase anonymous key"
+    },
+    "STRAPI_API_URL": {
+      "description": "Strapi backend URL (optional)"
+    },
+    "NEXT_PUBLIC_API_URL": {
+      "description": "Public API URL",
+      "default": ""
+    }
+  },
+  "domains": [
+    "eastsea.monster",
+    "monster.eastsea.xyz"
+  ],
+  "regions": ["sfo1"],
+  "git": {
+    "deploymentEnabled": true
+  }
+}
