@@ -6,10 +6,10 @@ import Button from '@/components/Button';
 
 export default function BriefingsPage() {
   const briefings = [
-    { id: 1, title: 'Update #1', date: '2024-01-15', category: 'Game Updates' },
-    { id: 2, title: 'Update #2', date: '2024-01-10', category: 'Platform News' },
-    { id: 3, title: 'Update #3', date: '2024-01-05', category: 'Community' },
-    { id: 4, title: 'Update #4', date: '2024-01-01', category: 'Features' },
+    { id: 1, title: 'Medium 일일 트렌드 다이제스트 - 2026.02.05', date: '2026-02-05', category: 'Daily News' },
+    { id: 2, title: '2026년 2월 4일 데일리 브리핑', date: '2026-02-04', category: 'Market & Tech' },
+    { id: 3, title: 'Air Hockey Neon Board Polish', date: '2026-02-04', category: 'Game Updates' },
+    { id: 4, title: 'Wall Ninja Neon Polish', date: '2026-02-04', category: 'Game Updates' },
   ];
 
   return (
