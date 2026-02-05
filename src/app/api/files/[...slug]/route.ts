@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 
-const DOCS_DIR = '/Volumes/workspace/docs';
-const SPECS_DIR = '/Volumes/workspace/specs';
+const DOCS_DIR = process.env.DOCS_DIR || '/Volumes/workspace/docs';
+const SPECS_DIR = process.env.SPECS_DIR || '/Volumes/workspace/specs';
 
 export async function GET(
   request: Request,
