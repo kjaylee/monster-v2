@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Monster v2 - Game Platform",
-  description: "Explore games, novels, and briefings on the Monster v2 platform",
+  title: "Eastsea - Game Platform",
+  description: "Explore games, novels, and briefings on the Eastsea platform",
 };
 
 export default function RootLayout({

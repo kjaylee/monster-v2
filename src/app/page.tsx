@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <Layout>
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-5xl font-bold text-gold mb-4">Welcome to Monster v2</h1>
+        <h1 className="text-5xl font-bold text-gold mb-4">Welcome to Eastsea</h1>
         <p className="text-xl text-gray-300 mb-12">Explore games, novels, and briefings</p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
