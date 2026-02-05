@@ -1,41 +1,91 @@
 @unocss all;
 
 :root {
-  --background: #000000;
-  --foreground: #ffffff;
-  --gold: #D4AF37;
-  --red: #8B0000;
+  /* Dark Mode Colors (Primary) */
+  --background: #0f172a; /* Slate-900 */
+  --foreground: #f1f5f9; /* Slate-100 */
+  --secondary: #1e293b; /* Slate-800 */
+  --tertiary: #334155; /* Slate-700 */
+  
+  /* Accent Colors */
+  --cyan: #06b6d4;
+  --purple: #a855f7;
+  --emerald: #10b981;
+  --amber: #f59e0b;
+  --rose: #f43f5e;
+  
+  /* Text Colors */
+  --text-primary: #f1f5f9; /* Slate-100 */
+  --text-secondary: #cbd5e1; /* Slate-300 */
+  --text-muted: #94a3b8; /* Slate-400 */
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', 'Geist Sans', sans-serif;
   overflow-x: hidden;
 }
 
-h1 { @apply text-fluid-h1 font-bold text-gold-500; }
-h2 { @apply text-fluid-h2 font-bold text-gold-500; }
-h3 { @apply text-fluid-h3 font-semibold text-gold-400; }
-p { @apply text-fluid-p text-gray-400 leading-relaxed; }
+/* Typography */
+h1 { 
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--text-primary);
+}
+
+h2 { 
+  font-size: clamp(1.875rem, 4vw, 2.25rem);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+h3 { 
+  font-size: clamp(1.5rem, 3vw, 1.875rem);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text-primary);
+}
+
+p { 
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #000;
+  background: var(--background);
 }
 ::-webkit-scrollbar-thumb {
-  background: #D4AF37;
+  background: var(--cyan);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #b8922e;
+  background: #0891b2; /* Cyan-600 */
 }
 
 /* Fluid spacing */
 section {
   padding-top: clamp(4rem, 10vh, 8rem);
   padding-bottom: clamp(4rem, 10vh, 8rem);
+}
+
+/* Grid Layout Utility */
+.grid-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Focus visible */
+*:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
 }
