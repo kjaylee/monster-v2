@@ -1,0 +1,62 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: monster-postgres
+    environment:
+      POSTGRES_DB: monster_strapi
+      POSTGRES_USER: strapi
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-strapi_password_change_me}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U strapi -d monster_strapi"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  strapi:
+    image: node:22-alpine
+    container_name: monster-strapi
+    working_dir: /strapi
+    environment:
+      NODE_ENV: production
+      DATABASE_CLIENT: postgres
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: monster_strapi
+      DATABASE_USERNAME: strapi
+      DATABASE_PASSWORD: ${DB_PASSWORD:-strapi_password_change_me}
+      JWT_SECRET: ${JWT_SECRET:-change_me_jwt_secret_key}
+      ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET:-change_me_admin_jwt_secret}
+      API_TOKEN_SALT: ${API_TOKEN_SALT:-change_me_api_token_salt}
+    volumes:
+      - ./strapi:/strapi
+    ports:
+      - "1337:1337"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1337/admin"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    command: >
+      sh -c "
+        cd /strapi &&
+        npm install &&
+        npm run build &&
+        npm run start
+      "
+
+volumes:
+  postgres_data:
+
+networks:
+  default:
+    name: monster-network
