@@ -43,7 +43,7 @@ html {
 }
 
 body {
-  @apply bg-slate-900 text-slate-100 transition-colors duration-200;
+  @apply bg-[#02030a] text-slate-100 transition-colors duration-200;
 }
 
 @media (prefers-color-scheme: light) {
@@ -129,5 +129,31 @@ a {
 @media (prefers-color-scheme: light) {
   ::-webkit-scrollbar-thumb {
     @apply bg-slate-300 hover:bg-slate-400;
+  }
+}
+
+@layer components {
+  .research-markdown table {
+    @apply w-full border-separate border-spacing-0 text-slate-100;
+  }
+
+  .research-markdown th {
+    @apply border border-slate-800 bg-[#080b18] px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-amber-200;
+  }
+
+  .research-markdown td {
+    @apply border-t border-slate-800 px-4 py-3 text-sm text-slate-200;
+  }
+
+  .research-markdown blockquote {
+    @apply my-6 rounded-2xl border border-amber-400/20 bg-white/5 px-6 py-4 text-lg italic text-slate-200;
+  }
+
+  .research-markdown pre {
+    @apply rounded-2xl border border-[#4a2f1a] bg-[#02040a];
+  }
+
+  .research-markdown code {
+    @apply font-mono text-sm bg-white/10 px-1.5 py-0.5 rounded-lg border border-slate-700 text-amber-100;
   }
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -26,6 +26,22 @@ interface TOCItem {
   level: number;
 }
 
+const slugify = (text: string) =>
+  text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
+
+const extractText = (node: any): string => {
+  if (!node) return '';
+  if (typeof node === 'string') return node;
+  if (Array.isArray(node)) return node.map(extractText).join('');
+  if (node.props?.children) return extractText(node.props.children);
+  return '';
+};
+
 export default function ResearchPage() {
   const [files, setFiles] = useState<FileInfo[]>([]);
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
@@ -34,6 +50,8 @@ export default function ResearchPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<'all' | 'docs' | 'specs'>('all');
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const headingIdsRef = useRef<string[]>([]);
+  const headingCounterRef = useRef(0);
 
   // Fetch file list
   useEffect(() => {
@@ -42,6 +60,10 @@ export default function ResearchPage() {
       .then(data => setFiles(data.files || []))
       .catch(err => console.error('Failed to load files:', err));
   }, []);
+
+  useEffect(() => {
+    headingCounterRef.current = 0;
+  }, [fileContent?.content]);
 
   // Fetch file content
   const loadFile = async (slug: string) => {
@@ -77,23 +99,150 @@ export default function ResearchPage() {
 
   // Extract TOC from markdown
   const toc = useMemo(() => {
-    if (!fileContent) return [];
-    
+    if (!fileContent) {
+      headingIdsRef.current = [];
+      return [];
+    }
+
     const headings: TOCItem[] = [];
-    const lines = fileContent.content.split('\n');
-    
-    lines.forEach((line, index) => {
+    const slugCounts = new Map<string, number>();
+    const registry: string[] = [];
+
+    fileContent.content.split('\n').forEach((line) => {
       const match = line.match(/^(#{1,6})\s+(.+)$/);
       if (match) {
         const level = match[1].length;
-        const text = match[2];
-        const id = `heading-${index}`;
+        const text = match[2].trim();
+        const baseSlug = slugify(text || 'heading');
+        const occurrence = slugCounts.get(baseSlug) ?? 0;
+        slugCounts.set(baseSlug, occurrence + 1);
+        const id = occurrence === 0 ? baseSlug : `${baseSlug}-${occurrence}`;
         headings.push({ id, text, level });
+        registry.push(id);
       }
     });
-    
+
+    headingIdsRef.current = registry;
+    headingCounterRef.current = 0;
+
     return headings;
   }, [fileContent]);
+
+  const headingStyles: Record<'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6', string> = {
+    h1: 'text-4xl md:text-5xl text-amber-100 leading-tight',
+    h2: 'text-3xl md:text-4xl text-amber-200 leading-snug',
+    h3: 'text-2xl md:text-3xl text-white/90 leading-snug',
+    h4: 'text-xl md:text-2xl text-white/85',
+    h5: 'text-lg text-white/80',
+    h6: 'text-base text-white/70',
+  };
+
+  const createHeadingRenderer = (Tag: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6') => {
+    const Element = Tag;
+    return ({ children, ...props }: any) => {
+      const text = extractText(children).trim();
+      const index = headingCounterRef.current++;
+      const generatedId =
+        headingIdsRef.current[index] ?? slugify(text || `heading-${index}`);
+      const headingClass = headingStyles[Tag] ?? 'text-white';
+      return (
+        <Element
+          id={generatedId}
+          className={`scroll-mt-24 font-semibold tracking-tight ${headingClass}`}
+          {...props}
+        >
+          {children}
+        </Element>
+      );
+    };
+  };
+
+  const markdownComponents = {
+    h1: createHeadingRenderer('h1'),
+    h2: createHeadingRenderer('h2'),
+    h3: createHeadingRenderer('h3'),
+    h4: createHeadingRenderer('h4'),
+    h5: createHeadingRenderer('h5'),
+    h6: createHeadingRenderer('h6'),
+    table: ({ className, children, ...props }: any) => (
+      <div className="mb-6 overflow-x-auto rounded-2xl border border-[#4a2f1a] bg-[#03050a]/80 shadow-[0_20px_45px_rgba(0,0,0,0.65)] ring-1 ring-[#d1a758]/40">
+        <table
+          className={`min-w-full border-separate border-spacing-0 text-sm text-slate-100 ${className || ''}`}
+          {...props}
+        >
+          {children}
+        </table>
+      </div>
+    ),
+    th: ({ className, ...props }: any) => (
+      <th
+        className={`border border-slate-800 bg-[#0b101b] px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-amber-200 ${className || ''}`}
+        {...props}
+      />
+    ),
+    td: ({ className, ...props }: any) => (
+      <td
+        className={`border-t border-slate-800 px-4 py-3 text-sm text-slate-200 ${className || ''}`}
+        {...props}
+      />
+    ),
+    blockquote: ({ children, ...props }: any) => (
+      <blockquote
+        className="my-6 rounded-2xl border border-amber-400/20 bg-white/5 px-6 py-4 text-lg italic text-slate-200"
+        {...props}
+      >
+        {children}
+      </blockquote>
+    ),
+    a: ({ className, ...props }: any) => (
+      <a
+        className={`text-amber-200 transition hover:text-amber-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400 ${className || ''}`}
+        {...props}
+      />
+    ),
+    ul: ({ className, ...props }: any) => (
+      <ul className={`space-y-2 pl-6 text-slate-200 ${className || ''}`} {...props} />
+    ),
+    ol: ({ className, ...props }: any) => (
+      <ol className={`space-y-2 pl-6 text-slate-200 ${className || ''}`} {...props} />
+    ),
+    li: ({ className, ...props }: any) => (
+      <li className={`leading-relaxed ${className || ''}`} {...props} />
+    ),
+    hr: ({ ...props }: any) => (
+      <hr className="my-8 border-t border-amber-500/30 opacity-60" {...props} />
+    ),
+    code({ node, inline, className, children, ...props }: any) {
+      const match = /language-(\w+)/.exec(className || '');
+      if (!inline && match) {
+        return (
+          <SyntaxHighlighter
+            style={vscDarkPlus}
+            language={match[1]}
+            PreTag="div"
+            customStyle={{
+              backgroundColor: '#02040a',
+              borderRadius: '1rem',
+              padding: '1rem',
+              border: '1px solid rgba(212, 168, 87, 0.3)',
+            }}
+            {...props}
+          >
+            {String(children).replace(/\n$/, '')}
+          </SyntaxHighlighter>
+        );
+      }
+
+      return (
+        <code
+          className={`font-mono text-sm bg-white/10 px-1.5 py-0.5 rounded-lg border border-slate-700 text-amber-100 ${className || ''}`}
+          {...props}
+        >
+          {children}
+        </code>
+      );
+    },
+  } as const;
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100">
@@ -200,59 +349,45 @@ export default function ResearchPage() {
           )}
 
           {!loading && fileContent && (
-            <div className="flex">
+            <div className="flex gap-8 bg-gradient-to-br from-[#03060c] via-[#030408] to-[#010205] px-6 pb-8 pt-4">
               {/* Document Content */}
-              <div className="flex-1 px-8 py-6 max-w-4xl mx-auto">
-                <div className="mb-6">
-                  <h2 className="text-3xl font-bold text-white mb-2">
+              <div className="flex-1 px-0 py-0 max-w-4xl mx-auto space-y-6">
+                <div className="space-y-2">
+                  <h2 className="text-3xl md:text-4xl font-bold text-amber-200">
                     {fileContent.filename.replace('.md', '')}
                   </h2>
-                  <div className="text-sm text-gray-400">
+                  <div className="text-sm text-slate-400">
                     Last modified: {new Date(fileContent.modified).toLocaleString()} •{' '}
                     Category: {fileContent.category}
                   </div>
                 </div>
 
-                <article className="prose prose-invert prose-lg max-w-none">
-                  <ReactMarkdown
-                    remarkPlugins={[remarkGfm]}
-                    components={{
-                      code({ node, inline, className, children, ...props }: any) {
-                        const match = /language-(\w+)/.exec(className || '');
-                        return !inline && match ? (
-                          <SyntaxHighlighter
-                            style={vscDarkPlus}
-                            language={match[1]}
-                            PreTag="div"
-                            {...props}
-                          >
-                            {String(children).replace(/\n$/, '')}
-                          </SyntaxHighlighter>
-                        ) : (
-                          <code className={className} {...props}>
-                            {children}
-                          </code>
-                        );
-                      },
-                    }}
-                  >
-                    {fileContent.content}
-                  </ReactMarkdown>
-                </article>
+                <section className="rounded-3xl border border-[#4a2f1a] bg-[#020309]/80 p-6 shadow-[0_30px_80px_rgba(0,0,0,0.7)]">
+                  <article className="research-markdown prose prose-invert prose-lg max-w-none space-y-6 text-slate-200">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+                      {fileContent.content}
+                    </ReactMarkdown>
+                  </article>
+                </section>
               </div>
 
               {/* Table of Contents */}
               {toc.length > 0 && (
-                <aside className="hidden xl:block w-64 p-6 border-l border-gray-700 sticky top-0 h-[calc(100vh-73px)] overflow-y-auto">
-                  <h3 className="text-sm font-semibold text-gray-400 uppercase mb-4">
-                    On This Page
-                  </h3>
-                  <nav className="space-y-2">
+                <aside className="hidden xl:flex w-64 flex-col gap-4 rounded-2xl border border-[#4a2f1a] bg-[#020308]/90 p-6 shadow-[0_25px_60px_rgba(0,0,0,0.55)] sticky top-0 h-[calc(100vh-73px)] overflow-y-auto">
+                  <div>
+                    <h3 className="text-xs font-semibold text-amber-200 tracking-[0.2em] uppercase mb-3">
+                      On This Page
+                    </h3>
+                    <p className="text-sm text-slate-400">
+                      {toc.length} headings
+                    </p>
+                  </div>
+                  <nav className="space-y-3">
                     {toc.map((item) => (
                       <a
                         key={item.id}
                         href={`#${item.id}`}
-                        className="block text-sm text-gray-400 hover:text-white transition"
+                        className="block rounded-xl border border-transparent bg-white/5 px-3 py-2 text-sm text-slate-200 transition hover:border-amber-400/60 hover:bg-[#0b0e18]"
                         style={{ paddingLeft: `${(item.level - 1) * 12}px` }}
                       >
                         {item.text}

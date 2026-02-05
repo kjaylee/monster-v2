@@ -59,6 +59,65 @@ const config: Config = {
         md: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
         lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
       },
+      typography: ({ theme }) => ({
+        DEFAULT: {
+          css: {
+            color: theme('colors.slate.200'),
+            a: {
+              color: theme('colors.amber.200'),
+              fontWeight: 500,
+              textDecoration: 'none',
+              transition: 'color 0.2s ease',
+            },
+            'a:hover': {
+              color: theme('colors.amber.100'),
+            },
+            strong: {
+              color: theme('colors.white'),
+            },
+            code: {
+              color: theme('colors.amber.100'),
+            },
+            'code::before': {
+              display: 'none',
+            },
+            'code::after': {
+              display: 'none',
+            },
+            blockquote: {
+              color: theme('colors.slate.200'),
+              borderColor: theme('colors.amber.400'),
+              backgroundColor: 'rgba(17, 24, 39, 0.6)',
+            },
+            h1: {
+              color: theme('colors.amber.100'),
+            },
+            h2: {
+              color: theme('colors.amber.200'),
+            },
+            h3: {
+              color: theme('colors.white'),
+            },
+            table: {
+              borderColor: theme('colors.slate.700'),
+            },
+            'tr:nth-child(odd)': {
+              backgroundColor: 'rgba(255, 255, 255, 0.02)',
+            },
+          },
+        },
+        invert: {
+          css: {
+            color: theme('colors.slate.100'),
+            a: {
+              color: theme('colors.amber.200'),
+            },
+            blockquote: {
+              borderColor: theme('colors.amber.400'),
+            },
+          },
+        },
+      }),
     },
   },
   plugins: [
