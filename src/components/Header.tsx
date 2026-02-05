@@ -1,21 +1,69 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
+import Link from 'next/link';
 
 export default function Header() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const navLinks = [
+    { label: 'Games', href: '/games' },
+    { label: 'Novels', href: '/novels' },
+    { label: 'Briefings', href: '/briefings' },
+    { label: 'Profile', href: '/profile' },
+  ];
+
   return (
-    <header className="bg-black border-b border-gold px-6 py-4 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <h1 className="text-3xl font-bold text-gold">EASTSEA</h1>
-          <p className="text-sm text-gray-400">Game Platform</p>
+    <header className="bg-slate-900 border-b border-slate-700 sticky top-0 z-50 shadow-md">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2 group">
+            <span className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-cyan-500 to-purple-500 bg-clip-text text-transparent group-hover:from-cyan-400 group-hover:to-purple-400 transition-all">
+              EASTSEA
+            </span>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-1">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="px-4 py-2 text-slate-300 hover:text-cyan-400 transition-colors duration-150 text-sm font-medium border-b-2 border-transparent hover:border-cyan-400"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden p-2 text-slate-400 hover:text-slate-200 transition-colors"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Toggle mobile menu"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
         </div>
-        <nav className="flex items-center gap-6">
-          <a href="/games" className="text-white hover:text-gold transition">Games</a>
-          <a href="/novels" className="text-white hover:text-gold transition">Novels</a>
-          <a href="/briefings" className="text-white hover:text-gold transition">Briefings</a>
-          <a href="/profile" className="text-white hover:text-gold transition">Profile</a>
-        </nav>
+
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <nav className="md:hidden border-t border-slate-700 py-4 space-y-2">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="block px-4 py-2 text-slate-300 hover:text-cyan-400 hover:bg-slate-800 rounded transition-colors duration-150"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+        )}
       </div>
     </header>
   );
