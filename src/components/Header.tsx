@@ -5,98 +5,64 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 export default function Header() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [activeCategory, setActiveCategory] = useState('전체');
   const pathname = usePathname();
 
-  const navLinks = [
-    { label: 'Games', href: '/games' },
-    { label: 'Novels', href: '/novels' },
-    { label: 'Briefings', href: '/briefings' },
-    { label: 'Profile', href: '/profile' },
+  const categories = [
+    '전체', '브리핑', '다이제스트', '리포트', '일기', 
+    '플러싱', '업그레이드', '리서치', '기타'
   ];
 
-  const isActive = (href: string) => pathname === href;
-
   return (
-    <header className="bg-slate-900/95 backdrop-blur-md border-b border-slate-700/50 sticky top-0 z-50 shadow-lg shadow-black/20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
-            <span className="text-2xl font-bold tracking-tight">
-              <span className="text-cyan-500 group-hover:text-cyan-400 transition-colors">EAST</span>
-              <span className="text-slate-100 group-hover:text-white transition-colors">SEA</span>
-            </span>
+    <header className="bg-white border-b border-gray-100">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Logo & Subtitle - Center Aligned */}
+        <div className="text-center py-8">
+          <Link href="/" className="inline-block group">
+            <h1 className="logo-text logo-underline text-blue-600 mb-2 hover:text-blue-700">
+              eastsea
+            </h1>
           </Link>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-1" role="navigation" aria-label="Main navigation">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`
-                  px-4 py-2 rounded-lg text-sm font-medium
-                  transition-all duration-150 ease-out
-                  ${
-                    isActive(link.href)
-                      ? 'bg-cyan-500/10 text-cyan-500 border-b-2 border-cyan-500'
-                      : 'text-slate-300 hover:text-cyan-400 hover:bg-slate-800'
-                  }
-                `}
-                aria-current={isActive(link.href) ? 'page' : undefined}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden p-2 text-cyan-500 hover:text-cyan-400 hover:bg-slate-800 rounded-lg transition-all"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Toggle mobile menu"
-            aria-expanded={isMobileMenuOpen}
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {isMobileMenuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
-          </button>
+          <p className="text-sm text-gray-500">
+            일일 브리핑 · 기술 리포트 · 개발 인사이트
+          </p>
         </div>
-      </div>
 
-      {/* Mobile Menu */}
-      {isMobileMenuOpen && (
+        {/* Category Filter - Horizontal Scroll on Mobile */}
         <nav 
-          className="md:hidden bg-slate-800 border-t border-slate-700 py-4 space-y-1 px-4"
+          className="flex items-center gap-2 overflow-x-auto pb-4 scrollbar-hide"
           role="navigation" 
-          aria-label="Mobile navigation"
+          aria-label="Category filter"
         >
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
+          {categories.map((category) => (
+            <button
+              key={category}
+              onClick={() => setActiveCategory(category)}
               className={`
-                block py-3 px-4 rounded-lg text-base font-medium
-                transition-all duration-150
+                px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap
+                transition-all duration-200
                 ${
-                  isActive(link.href)
-                    ? 'bg-cyan-500/10 text-cyan-500 border-l-4 border-cyan-500'
-                    : 'text-slate-300 hover:text-cyan-400 hover:bg-slate-700'
+                  activeCategory === category
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }
               `}
-              onClick={() => setIsMobileMenuOpen(false)}
-              aria-current={isActive(link.href) ? 'page' : undefined}
             >
-              {link.label}
-            </Link>
+              {category}
+            </button>
           ))}
         </nav>
-      )}
+      </div>
+
+      <style jsx>{`
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
     </header>
   );
 }

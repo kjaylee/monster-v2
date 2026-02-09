@@ -1,51 +1,50 @@
 @unocss all;
 
 :root {
-  /* Dark Mode Colors (Primary) */
-  --background: #0f172a; /* Slate-900 */
-  --foreground: #f1f5f9; /* Slate-100 */
-  --secondary: #1e293b; /* Slate-800 */
-  --tertiary: #334155; /* Slate-700 */
+  /* Light Mode Colors (Primary) */
+  --background: #ffffff;
+  --foreground: #1e293b;
+  --secondary: #f8fafc;
+  --tertiary: #e2e8f0;
   
   /* Accent Colors */
-  --cyan: #06b6d4;
-  --purple: #a855f7;
-  --emerald: #10b981;
-  --amber: #f59e0b;
-  --rose: #f43f5e;
+  --blue: #3b82f6;
+  --blue-hover: #2563eb;
+  --gray: #64748b;
+  --border: #e2e8f0;
   
   /* Text Colors */
-  --text-primary: #f1f5f9; /* Slate-100 */
-  --text-secondary: #cbd5e1; /* Slate-300 */
-  --text-muted: #94a3b8; /* Slate-400 */
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'Inter', 'Geist Sans', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   overflow-x: hidden;
 }
 
 /* Typography */
 h1 { 
-  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-size: clamp(2rem, 5vw, 2.5rem);
   font-weight: 700;
-  line-height: 1.1;
-  color: var(--text-primary);
-}
-
-h2 { 
-  font-size: clamp(1.875rem, 4vw, 2.25rem);
-  font-weight: 600;
   line-height: 1.2;
   color: var(--text-primary);
 }
 
-h3 { 
-  font-size: clamp(1.5rem, 3vw, 1.875rem);
+h2 { 
+  font-size: clamp(1.5rem, 4vw, 1.875rem);
   font-weight: 600;
   line-height: 1.3;
+  color: var(--text-primary);
+}
+
+h3 { 
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
+  font-weight: 600;
+  line-height: 1.4;
   color: var(--text-primary);
 }
 
@@ -61,31 +60,68 @@ p {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--background);
+  background: var(--secondary);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--cyan);
+  background: var(--gray);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #0891b2; /* Cyan-600 */
+  background: var(--blue);
 }
 
 /* Fluid spacing */
 section {
-  padding-top: clamp(4rem, 10vh, 8rem);
-  padding-bottom: clamp(4rem, 10vh, 8rem);
+  padding-top: clamp(2rem, 5vh, 4rem);
+  padding-bottom: clamp(2rem, 5vh, 4rem);
 }
 
 /* Grid Layout Utility */
 .grid-layout {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
 }
 
 /* Focus visible */
 *:focus-visible {
-  outline: 2px solid var(--cyan);
+  outline: 2px solid var(--blue);
   outline-offset: 2px;
+}
+
+/* Logo Typography - Righteous */
+.logo-text {
+  font-family: var(--font-righteous), sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  font-size: 2.5rem;
+  line-height: 1;
+  transition: all 0.3s ease;
+}
+
+.logo-text:hover {
+  transform: scale(1.05);
+}
+
+/* Logo underline effect */
+.logo-underline {
+  position: relative;
+  display: inline-block;
+}
+
+.logo-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: currentColor;
+  border-radius: 2px;
+}
+
+@media (max-width: 640px) {
+  .logo-text {
+    font-size: 2rem;
+  }
 }

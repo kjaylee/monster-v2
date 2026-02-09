@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Righteous } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,10 +12,18 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// Logo Font - Righteous (Retro Game, Unique)
+const righteous = Righteous({
+  variable: "--font-righteous",
+  subsets: ["latin"],
+  weight: ["400"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "이스트시 - 게임 플랫폼",
-  description: "게임, 소설, 뉴스를 한곳에서 즐기는 이스트시 플랫폼",
-  keywords: ["게임", "소설", "뉴스", "게임플랫폼"],
+  title: "eastsea - 일일 브리핑 & 리포트",
+  description: "일일 브리핑, 기술 리포트, 개발 인사이트를 한곳에서",
+  keywords: ["브리핑", "리포트", "개발", "기술", "인사이트"],
 };
 
 export default function RootLayout({
@@ -26,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${righteous.variable} antialiased`}
       >
         {children}
       </body>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Color Match - 색상 이름 맞추기</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+        #game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+        #stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            font-size: 18px;
+        }
+        #timer, #score {
+            background: #f0f0f0;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        #color-word {
+            font-size: 72px;
+            font-weight: bold;
+            margin: 40px 0;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        button {
+            flex: 1;
+            min-width: 120px;
+            padding: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        button:active {
+            transform: scale(0.95);
+        }
+        #yes-btn {
+            background: #4CAF50;
+            color: white;
+        }
+        #no-btn {
+            background: #f44336;
+            color: white;
+        }
+        #start-btn {
+            background: #2196F3;
+            color: white;
+            width: 100%;
+        }
+        #game-over {
+            display: none;
+        }
+        #final-score {
+            font-size: 48px;
+            color: #667eea;
+            margin: 20px 0;
+        }
+        .instruction {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 24px;
+            }
+            #color-word {
+                font-size: 56px;
+            }
+            button {
+                min-width: 100px;
+                padding: 15px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>🎨 Color Match</h1>
+        
+        <div id="game-start">
+            <p class="instruction">
+                화면에 표시된 <strong>색상 이름</strong>과 <strong>실제 색상</strong>이 일치하면 O, 다르면 X를 선택하세요!<br>
+                스트룹 효과를 이겨내고 높은 점수에 도전하세요!
+            </p>
+            <button id="start-btn" onclick="startGame()">게임 시작</button>
+        </div>
+
+        <div id="game-play" style="display: none;">
+            <div id="stats">
+                <div id="timer">⏱️ 30</div>
+                <div id="score">🎯 0</div>
+            </div>
+            <div id="color-word"></div>
+            <div class="button-group">
+                <button id="yes-btn" onclick="checkAnswer(true)">⭕ 일치</button>
+                <button id="no-btn" onclick="checkAnswer(false)">❌ 불일치</button>
+            </div>
+        </div>
+
+        <div id="game-over">
+            <h2>게임 종료!</h2>
+            <div id="final-score"></div>
+            <button id="start-btn" onclick="startGame()">다시 하기</button>
+        </div>
+    </div>
+
+    <script>
+        const colors = [
+            { name: '빨강', code: '#FF0000' },
+            { name: '파랑', code: '#0000FF' },
+            { name: '초록', code: '#00FF00' },
+            { name: '노랑', code: '#FFFF00' },
+            { name: '보라', code: '#9C27B0' },
+            { name: '주황', code: '#FF9800' },
+            { name: '분홍', code: '#E91E63' },
+            { name: '하늘', code: '#00BCD4' }
+        ];
+
+        let score = 0;
+        let timeLeft = 30;
+        let currentCorrect = false;
+        let timerInterval = null;
+
+        function startGame() {
+            score = 0;
+            timeLeft = 30;
+            
+            document.getElementById('game-start').style.display = 'none';
+            document.getElementById('game-over').style.display = 'none';
+            document.getElementById('game-play').style.display = 'block';
+            
+            updateDisplay();
+            nextRound();
+            
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').textContent = `⏱️ ${timeLeft}`;
+                
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function nextRound() {
+            const wordColor = colors[Math.floor(Math.random() * colors.length)];
+            const displayColor = colors[Math.floor(Math.random() * colors.length)];
+            
+            currentCorrect = wordColor.name === displayColor.name;
+            
+            const wordElement = document.getElementById('color-word');
+            wordElement.textContent = wordColor.name;
+            wordElement.style.color = displayColor.code;
+        }
+
+        function checkAnswer(userAnswer) {
+            if (userAnswer === currentCorrect) {
+                score += 10;
+                flashFeedback(true);
+            } else {
+                score = Math.max(0, score - 5);
+                flashFeedback(false);
+            }
+            
+            updateDisplay();
+            nextRound();
+        }
+
+        function flashFeedback(correct) {
+            const container = document.getElementById('game-container');
+            const originalColor = container.style.backgroundColor;
+            container.style.backgroundColor = correct ? '#4CAF5033' : '#f4433633';
+            setTimeout(() => {
+                container.style.backgroundColor = originalColor;
+            }, 200);
+        }
+
+        function updateDisplay() {
+            document.getElementById('score').textContent = `🎯 ${score}`;
+        }
+
+        function endGame() {
+            clearInterval(timerInterval);
+            
+            document.getElementById('game-play').style.display = 'none';
+            document.getElementById('game-over').style.display = 'block';
+            document.getElementById('final-score').textContent = `${score}점`;
+        }
+
+        // Prevent double-tap zoom on iOS
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+    </script>
+</body>
+</html>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tap Sequence - 숫자 순서 기억하기</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+        #game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+        #stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            font-size: 18px;
+        }
+        #level, #score {
+            background: #f0f0f0;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        #grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 30px 0;
+            max-width: 360px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .cell {
+            aspect-ratio: 1;
+            background: #e0e0e0;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .cell.show {
+            background: #2196F3;
+            color: white;
+            transform: scale(1.1);
+        }
+        .cell.correct {
+            background: #4CAF50;
+            color: white;
+        }
+        .cell.wrong {
+            background: #f44336;
+            color: white;
+        }
+        .cell:active {
+            transform: scale(0.95);
+        }
+        button {
+            padding: 20px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background: #2196F3;
+            color: white;
+        }
+        button:active {
+            transform: scale(0.95);
+        }
+        #game-over {
+            display: none;
+        }
+        #final-score {
+            font-size: 48px;
+            color: #2196F3;
+            margin: 20px 0;
+        }
+        .instruction {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        #message {
+            min-height: 30px;
+            font-size: 20px;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #2196F3;
+        }
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 24px;
+            }
+            .cell {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>🧠 Tap Sequence</h1>
+        
+        <div id="game-start">
+            <p class="instruction">
+                화면에 나타나는 숫자의 <strong>순서를 기억</strong>하고,<br>
+                순서대로 탭하세요!<br>
+                레벨이 올라갈수록 숫자가 늘어납니다.
+            </p>
+            <button onclick="startGame()">게임 시작</button>
+        </div>
+
+        <div id="game-play" style="display: none;">
+            <div id="stats">
+                <div id="level">🎯 레벨 1</div>
+                <div id="score">⭐ 0</div>
+            </div>
+            <div id="message">준비하세요...</div>
+            <div id="grid"></div>
+        </div>
+
+        <div id="game-over">
+            <h2>게임 종료!</h2>
+            <div id="final-score"></div>
+            <div id="final-level"></div>
+            <button onclick="startGame()">다시 하기</button>
+        </div>
+    </div>
+
+    <script>
+        let level = 1;
+        let score = 0;
+        let sequence = [];
+        let userSequence = [];
+        let isShowing = false;
+        let gameActive = false;
+
+        function startGame() {
+            level = 1;
+            score = 0;
+            
+            document.getElementById('game-start').style.display = 'none';
+            document.getElementById('game-over').style.display = 'none';
+            document.getElementById('game-play').style.display = 'block';
+            
+            createGrid();
+            updateDisplay();
+            nextLevel();
+        }
+
+        function createGrid() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            
+            for (let i = 1; i <= 9; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.textContent = i;
+                cell.onclick = () => handleCellClick(i);
+                grid.appendChild(cell);
+            }
+        }
+
+        function nextLevel() {
+            gameActive = false;
+            sequence = [];
+            userSequence = [];
+            
+            const sequenceLength = level + 2;
+            
+            for (let i = 0; i < sequenceLength; i++) {
+                sequence.push(Math.floor(Math.random() * 9) + 1);
+            }
+            
+            showSequence();
+        }
+
+        async function showSequence() {
+            isShowing = true;
+            document.getElementById('message').textContent = '잘 보세요! 👀';
+            
+            await sleep(1000);
+            
+            for (let num of sequence) {
+                const cells = document.querySelectorAll('.cell');
+                cells[num - 1].classList.add('show');
+                
+                await sleep(800);
+                
+                cells[num - 1].classList.remove('show');
+                await sleep(300);
+            }
+            
+            document.getElementById('message').textContent = '순서대로 탭하세요!';
+            isShowing = false;
+            gameActive = true;
+        }
+
+        function handleCellClick(num) {
+            if (!gameActive || isShowing) return;
+            
+            userSequence.push(num);
+            
+            const cells = document.querySelectorAll('.cell');
+            const index = userSequence.length - 1;
+            
+            if (userSequence[index] === sequence[index]) {
+                cells[num - 1].classList.add('correct');
+                setTimeout(() => {
+                    cells[num - 1].classList.remove('correct');
+                }, 300);
+                
+                if (userSequence.length === sequence.length) {
+                    gameActive = false;
+                    score += level * 10;
+                    level++;
+                    updateDisplay();
+                    document.getElementById('message').textContent = '성공! 🎉';
+                    setTimeout(nextLevel, 1500);
+                }
+            } else {
+                cells[num - 1].classList.add('wrong');
+                setTimeout(() => {
+                    cells[num - 1].classList.remove('wrong');
+                }, 300);
+                endGame();
+            }
+        }
+
+        function updateDisplay() {
+            document.getElementById('level').textContent = \`🎯 레벨 \${level}\`;
+            document.getElementById('score').textContent = \`⭐ \${score}\`;
+        }
+
+        function endGame() {
+            gameActive = false;
+            
+            document.getElementById('game-play').style.display = 'none';
+            document.getElementById('game-over').style.display = 'block';
+            document.getElementById('final-score').textContent = \`\${score}점\`;
+            document.getElementById('final-level').textContent = \`레벨 \${level} 도달\`;
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+    </script>
+</body>
+</html>
